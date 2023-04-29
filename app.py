@@ -36,7 +36,6 @@ class Prediction(Model):
         database = DB
 
 class Error(Model):
-    observation_id = TextField()
     observation = TextField()
     error = TextField()
 
@@ -322,8 +321,7 @@ def predict():
         response = {'error': error}
     
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error)
             e.save()
         except Exception as e:
@@ -340,8 +338,7 @@ def predict():
         response = {'error': error}
         
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error)
             e.save()
         except Exception as e:
@@ -358,8 +355,7 @@ def predict():
         response = {'error': error}
         
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error)
             e.save()
         except Exception as e:
@@ -376,8 +372,7 @@ def predict():
         response = {'error': error}
         
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error)
             e.save()
         except Exception as e:
@@ -393,8 +388,7 @@ def predict():
         response = {'error': error}
         
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error)
             e.save()
         except Exception as e:
@@ -411,8 +405,7 @@ def predict():
         response = {'error': error}
         
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error)
             e.save()
         except Exception as e:
@@ -429,8 +422,7 @@ def predict():
         response = {'error': error}
         
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error)
             e.save()
         except Exception as e:
@@ -447,8 +439,7 @@ def predict():
         response = {'error': error}
         
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error)
             e.save()
         except Exception as e:
@@ -515,8 +506,7 @@ def predict():
         DB.rollback()  
         
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error_msg)
             e.save()
         except Exception as e:
@@ -549,8 +539,7 @@ def update():
         error_msg = 'Observation ID: "{}" does not exist'.format(obs['observation_id'])
         
         try:    
-            e = Error(observation_id = _id,
-                      observation = request.data,
+            e = Error(observation = request.data,
                       error = error_msg)
             e.save()
         except Exception as e:
