@@ -150,10 +150,7 @@ def check_categorical_values(observation):
                                       'Black', 
                                       'Asian', 
                                       'Other', 
-                                      'Mixed'],
-        'Part of a policing operation': [True, 
-                                         False, 
-                                         None]
+                                      'Mixed']
     }
     
     for key, valid_categories in valid_category_map.items():
@@ -169,6 +166,22 @@ def check_categorical_values(observation):
 
     return True, ''
 
+def check_partofpolice(observation):
+    '''
+        Validates that observation contains a valid Part of Police Operation value
+        
+        Returns:
+        - assertion value: True if Part of Police Operation  is valid, False otherwise
+        - error message: empty if Part of Police Operation  is valid, Error Message otherwise
+    '''
+      
+    part_of_police = observation.get('Part of a policing operation')
+        
+    if (not pd.isna(part_of_police)) and (type(part_of_police) != bool):
+        error = 'Invalid value provided for Part of a policing operation: {}. Allowed values are of type boolean or NaN'.format(part_of_police)
+        return False, error
+    
+    return True, ''
 
 def check_latitude(observation):
     '''
@@ -232,7 +245,7 @@ def check_objectofsearch(observation):
     
     obj_search = observation.get('Object of search')
         
-    if (pd.isna(obj_search)) and (type(obj_search) != str):
+    if (pd.isna(obj_search)) or (type(obj_search) != str):
         error = 'Invalid value provided for Object of search: {}. Allowed values are of type string'.format(obj_search)
         return False, error
     
@@ -240,11 +253,11 @@ def check_objectofsearch(observation):
 
 def check_legislation(observation):
     '''
-        Validates that observation contains a valid Date 
+        Validates that observation contains a valid Legislation 
         
         Returns:
-        - assertion value: True if Date is valid, False otherwise
-        - error message: empty if Date is valid, Error Message otherwise
+        - assertion value: True if Legislation is valid, False otherwise
+        - error message: empty if Legislation is valid, Error Message otherwise
     '''
     
     leg = observation.get('Legislation')
@@ -323,6 +336,12 @@ def predict():
         response = {'error': error}
         return jsonify(response), 405
 
+    #Validate Part of a policing operation, if provided
+    pop_ok, error = check_partofpolice(observation)
+    if not pop_ok:
+        response = {'error': error}
+        return jsonify(response), 405
+    
     #Validate Latitude and Longitude, if provided
     lat_ok, error = check_latitude(observation)
     if not lat_ok:
