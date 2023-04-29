@@ -36,8 +36,9 @@ class Prediction(Model):
         database = DB
 
 class Error(Model):
-    observation_id = TextField(unique=True)
+    observation_id = TextField()
     observation = TextField()
+    error = TextField()
 
     class Meta:
         database = DB
@@ -322,10 +323,11 @@ def predict():
     
         try:    
             e = Error(observation_id = _id,
-                      observation = request.data)
+                      observation = request.data,
+                      error = error)
             e.save()
-        except IntegrityError:
-            error_msg = 'ERROR: Observation ID: "{}" already exists'.format(_id)
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
             response['error'] = error_msg
             DB.rollback()
             return jsonify(response), 405
@@ -336,41 +338,125 @@ def predict():
     categories_ok, error = check_categorical_values(observation)
     if not categories_ok:
         response = {'error': error}
+        
+        try:    
+            e = Error(observation_id = _id,
+                      observation = request.data,
+                      error = error)
+            e.save()
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
+            response['error'] = error_msg
+            DB.rollback()
+            return jsonify(response), 405
+        
         return jsonify(response), 405
 
     #Validate Part of a policing operation, if provided
     pop_ok, error = check_partofpolice(observation)
     if not pop_ok:
         response = {'error': error}
+        
+        try:    
+            e = Error(observation_id = _id,
+                      observation = request.data,
+                      error = error)
+            e.save()
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
+            response['error'] = error_msg
+            DB.rollback()
+            return jsonify(response), 405
+        
         return jsonify(response), 405
     
     #Validate Latitude and Longitude, if provided
     lat_ok, error = check_latitude(observation)
-    if not lat_ok:
+    if not lat_ok:        
         response = {'error': error}
+        
+        try:    
+            e = Error(observation_id = _id,
+                      observation = request.data,
+                      error = error)
+            e.save()
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
+            response['error'] = error_msg
+            DB.rollback()
+            return jsonify(response), 405
+        
         return jsonify(response), 405
     
     long_ok, error = check_longitude(observation)
     if not long_ok:
         response = {'error': error}
+        
+        try:    
+            e = Error(observation_id = _id,
+                      observation = request.data,
+                      error = error)
+            e.save()
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
+            response['error'] = error_msg
+            DB.rollback()
+            return jsonify(response), 405
+        
         return jsonify(response), 405
     
     #Validate Date
     date_ok, error = check_date(observation)
     if not date_ok:
         response = {'error': error}
+        
+        try:    
+            e = Error(observation_id = _id,
+                      observation = request.data,
+                      error = error)
+            e.save()
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
+            response['error'] = error_msg
+            DB.rollback()
+            return jsonify(response), 405
+        
         return jsonify(response), 405
     
     #Validate Object of Search
     obj_search_ok, error = check_objectofsearch(observation)
     if not obj_search_ok:
         response = {'error': error}
+        
+        try:    
+            e = Error(observation_id = _id,
+                      observation = request.data,
+                      error = error)
+            e.save()
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
+            response['error'] = error_msg
+            DB.rollback()
+            return jsonify(response), 405
+        
         return jsonify(response), 405
     
     #Validate Legislation
     leg_ok, error = check_legislation(observation)
     if not leg_ok:
         response = {'error': error}
+        
+        try:    
+            e = Error(observation_id = _id,
+                      observation = request.data,
+                      error = error)
+            e.save()
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
+            response['error'] = error_msg
+            DB.rollback()
+            return jsonify(response), 405
+        
         return jsonify(response), 405
     
     #Create Date features
@@ -403,6 +489,7 @@ def predict():
     #Prediction
     proba = pipeline.predict_proba(obs)[0, 1]
     threshold = 0.052
+    
     if proba >= threshold:
         prediction = 1
     else:
@@ -425,7 +512,19 @@ def predict():
     except IntegrityError:
         error_msg = 'ERROR: Observation ID: "{}" already exists'.format(_id)
         response['error'] = error_msg
-        DB.rollback()
+        DB.rollback()  
+        
+        try:    
+            e = Error(observation_id = _id,
+                      observation = request.data,
+                      error = error_msg)
+            e.save()
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
+            response['error'] = error_msg
+            DB.rollback()
+            return jsonify(response), 405
+        
         return jsonify(response), 405
     
     return jsonify(response), 200
@@ -448,6 +547,18 @@ def update():
     
     except Prediction.DoesNotExist:
         error_msg = 'Observation ID: "{}" does not exist'.format(obs['observation_id'])
+        
+        try:    
+            e = Error(observation_id = _id,
+                      observation = request.data,
+                      error = error_msg)
+            e.save()
+        except Exception as e:
+            error_msg = 'Error saving Observation in DB'
+            response['error'] = error_msg
+            DB.rollback()
+            return jsonify(response), 405
+        
         return jsonify({'error': error_msg}), 405
 
 @app.route('/list-db-contents')
