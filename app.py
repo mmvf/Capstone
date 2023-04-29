@@ -311,6 +311,8 @@ def predict():
         response = {'error': error}
         return jsonify(response), 405
     
+    #Set ID
+    _id = obs_json['observation_id']
     observation = obs_json
     
     #Validate Columns present in Request
@@ -319,7 +321,7 @@ def predict():
         response = {'error': error}
     
         try:    
-            e = Error(observation_id =_id,
+            e = Error(observation_id = _id,
                       observation = request.data)
             e.save()
         except IntegrityError:
@@ -370,9 +372,6 @@ def predict():
     if not leg_ok:
         response = {'error': error}
         return jsonify(response), 405
-        
-    #Set ID
-    _id = obs_json['observation_id']
     
     #Create Date features
     hour, month, day_of_week  = create_datefeatures(observation)  
